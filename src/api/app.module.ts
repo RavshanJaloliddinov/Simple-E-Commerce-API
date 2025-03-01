@@ -4,6 +4,8 @@ import { config } from 'src/config';
 import { BasketEntity, CategoryEntity, OrderEntity, ProductEntity, UserEntity } from 'src/core/entity';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { RedisModule } from 'src/infrastructure/redis/redis.module';
+import { MailModule } from 'src/infrastructure/mail/mail.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { UserModule } from './user/user.module';
     }),
     AuthModule,
     UserModule,
+    RedisModule,
+    MailModule,
   ]
 })
 export class AppModule { }

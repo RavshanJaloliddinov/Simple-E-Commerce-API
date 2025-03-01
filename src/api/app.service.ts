@@ -25,7 +25,6 @@ export class Application {
 
 
     await app.listen(config.PORT, () => {
-      console.log(Date.now());
       console.log(`Server running on  ${config.PORT} port`);
     });
   }

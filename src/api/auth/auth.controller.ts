@@ -1,11 +1,12 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { ApiBody, ApiTags, ApiResponse } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
 import { Public } from "src/common/decorator/public.decorator";
-
+import { JwtAuthGuard } from "./users/AuthGuard";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -37,5 +38,16 @@ export class AuthController {
   @ApiResponse({ status: 401, description: "Invalid refresh token." })
   async refreshToken(@Body() { refreshToken }: RefreshTokenDto) {
     return this.authService.refreshToken(refreshToken);
+  }
+
+  // Parol yangilash
+  @Put("update-password")
+  @UseGuards(JwtAuthGuard) // Token orqali foydalanuvchini aniqlash
+  @ApiBody({ type: UpdatePasswordDto })
+  @ApiResponse({ status: 200, description: "Password updated successfully." })
+  @ApiResponse({ status: 401, description: "Current password is incorrect." })
+  async updatePassword(@Req() req, @Body() updatePasswordDto: UpdatePasswordDto) {
+    const userId = req.user.id;  // Token orqali foydalanuvchi ID'sini olish
+    return this.authService.updatePassword(userId, updatePasswordDto);
   }
 }
