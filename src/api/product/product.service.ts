@@ -6,6 +6,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from 'src/core/entity/product.entity';
 import { UserEntity } from 'src/core/entity/user.entity';
 import { FileService } from 'src/infrastructure/file/file.service';
+import { responseByLang } from 'src/infrastructure/prompts/responsePrompts';
+import { ResponseTypes } from 'src/common/database/Enums';
 
 @Injectable()
 export class ProductService {
@@ -15,53 +17,75 @@ export class ProductService {
     private readonly fileService: FileService
   ) { }
 
-  // Create
-  async create(createProductDto: CreateProductDto, file: Express.Multer.File, user: UserEntity) {
+  // Create Product
+  async create(createProductDto: CreateProductDto, file: Express.Multer.File, user: UserEntity, lang: string) {
     const imagePath = await this.fileService.saveFile(file);
     const product = this.productRepository.create({
       ...createProductDto,
       image: imagePath,
-      created_by: user
+      created_by: user,
+      created_at: Date.now()
     });
-    return this.productRepository.save(product);
+
+    await this.productRepository.save(product);
+
+    return { data: product, status_code: 201, message: responseByLang(ResponseTypes.CREATE, lang) };
   }
 
-  // Get all products
-  async findAll() {
-    return this.productRepository.find({ where: { is_deleted: false } });
+  // Get All Products
+  async findAll(lang: string) {
+    const products = await this.productRepository.find({ where: { is_deleted: false } });
+
+    return { data: products, status_code: 200, message: responseByLang(ResponseTypes.FETCH_ALL, lang) };
   }
 
-  // Get product by ID
-  async findOne(id: string) {
-    const product = await this.productRepository.findOne({ where: { id } });
+  // Get Product By ID
+  async findOne(id: string, lang: string) {
+    const product = await this.productRepository.findOne({ where: { id, is_deleted: false } });
+
     if (!product) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException(responseByLang(ResponseTypes.NOT_FOUND, lang));
     }
-    return product;
+
+    return { data: product, status_code: 200, message: responseByLang(ResponseTypes.FETCH_ONE, lang) };
   }
 
-  // Update product
-  async update(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File, user?: UserEntity) {
-    const product = await this.findOne(id);
+  // Update Product
+  async update(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File, user?: UserEntity, lang?: string) {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException(responseByLang(ResponseTypes.NOT_FOUND, lang));
+    }
 
     if (file) {
       const imagePath = await this.fileService.saveFile(file);
       product.image = imagePath;
-      product.updated_at = Date.now()
-      product.updated_by = user
     }
 
     Object.assign(product, updateProductDto);
-    return this.productRepository.save(product);
+    product.updated_by = user;
+    product.updated_at = Date.now();
+
+    await this.productRepository.save(product);
+
+    return { data: product, status_code: 200, message: responseByLang(ResponseTypes.UPDATE, lang) };
   }
 
-  // Delete product
-  async remove(id: string, user: UserEntity) {
-    const product = await this.findOne(id);
-    product.is_deleted = true
-    product.deleted_at = Date.now()
-    product.deleted_by = user
-    await this.productRepository.save(product)
-    return product;
+  // Soft Delete Product
+  async remove(id: string, user: UserEntity, lang: string) {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException(responseByLang(ResponseTypes.NOT_FOUND, lang));
+    } 
+
+    product.is_deleted = true;
+    product.deleted_at = Date.now();
+    product.deleted_by = user;
+
+    await this.productRepository.save(product);
+
+    return { data: null, status_code: 200, message: responseByLang(ResponseTypes.DELETE, lang) };
   }
 }

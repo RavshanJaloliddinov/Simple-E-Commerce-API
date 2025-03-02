@@ -17,12 +17,15 @@ import {
   ApiResponse,
   ApiParam,
   ApiBearerAuth,
+  ApiQuery
 } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorator/current-user';
 import { UserEntity } from 'src/core/entity/user.entity';
 import { RolesGuard } from '../auth/roles/RoleGuard';
 import { JwtAuthGuard } from '../auth/users/AuthGuard';
 import { RolesDecorator } from '../auth/roles/RolesDecorator';
+import { CurrentLanguage } from 'src/common/decorator/current-language';
+import { UpdateBasketQuantityDto } from './dto/update-basket-quentity.dto';
 
 @ApiTags('Baskets')
 @ApiBearerAuth('access-token')
@@ -36,11 +39,13 @@ export class BasketController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Add product to basket' })
   @ApiResponse({ status: 201, description: 'Product added to basket' })
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   addProduct(
     @Body() createBasketDto: CreateBasketDto,
     @CurrentUser() currentUser: UserEntity,
+    @CurrentLanguage() lang: string
   ) {
-    return this.basketService.addProduct(createBasketDto, currentUser);
+    return this.basketService.addProduct(createBasketDto, currentUser, lang);
   }
 
   // Get all products in the basket
@@ -49,8 +54,11 @@ export class BasketController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Get all products in the basket' })
   @ApiResponse({ status: 200, description: 'List of basket products' })
-  getBasket(@CurrentUser() currentUser: UserEntity) {
-    return this.basketService.getBasket(currentUser);
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
+  getBasket(
+    @CurrentUser() currentUser: UserEntity,
+    @CurrentLanguage() lang: string) {
+    return this.basketService.getBasket(currentUser, lang);
   }
 
   // Update quantity of product in the basket
@@ -60,12 +68,14 @@ export class BasketController {
   @ApiOperation({ summary: 'Update quantity of product in the basket' })
   @ApiParam({ name: 'id', type: 'string', description: 'Basket Item ID' })
   @ApiResponse({ status: 200, description: 'Basket product quantity updated' })
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   updateQuantity(
     @Param('id') id: string,
-    @Body() quantity: number,
+    @Body() updateBasketQuantityDto: UpdateBasketQuantityDto,
     @CurrentUser() currentUser: UserEntity,
-  ) {
-    return this.basketService.updateQuantity(id, quantity, currentUser);
+    @CurrentLanguage() lang: string
+  ) { 
+    return this.basketService.updateQuantity(id, updateBasketQuantityDto.quantity, currentUser, lang);
   }
 
   // Remove product from basket
@@ -75,20 +85,25 @@ export class BasketController {
   @ApiOperation({ summary: 'Remove product from basket' })
   @ApiParam({ name: 'id', type: 'string', description: 'Basket Item ID' })
   @ApiResponse({ status: 200, description: 'Product removed from basket' })
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   removeProduct(
     @Param('id') id: string,
     @CurrentUser() currentUser: UserEntity,
+    @CurrentLanguage() lang: string
   ) {
-    return this.basketService.removeProduct(id, currentUser);
+    return this.basketService.removeProduct(id, currentUser, lang);
   }
 
-  // Clear the basket
+  // Clear the basket 
   @Delete('clear')
   @RolesDecorator(Roles.USER, Roles.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Clear the basket' })
   @ApiResponse({ status: 200, description: 'Basket cleared' })
-  clearBasket(@CurrentUser() currentUser: UserEntity) {
-    return this.basketService.clearBasket(currentUser);
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
+  clearBasket(
+    @CurrentUser() currentUser: UserEntity,
+    @CurrentLanguage() lang: string) {
+    return this.basketService.clearBasket(currentUser, lang);
   }
 }

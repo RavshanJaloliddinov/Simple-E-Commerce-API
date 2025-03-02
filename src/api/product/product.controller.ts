@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
   UsePipes,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
@@ -24,6 +25,7 @@ import {
   ApiBody,
   ApiParam,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorator/current-user';
 import { UserEntity } from 'src/core/entity/user.entity';
@@ -31,6 +33,7 @@ import { RolesGuard } from '../auth/roles/RoleGuard';
 import { JwtAuthGuard } from '../auth/users/AuthGuard';
 import { RolesDecorator } from '../auth/roles/RolesDecorator';
 import { ImageValidationPipe } from 'src/common/pipes/image.pipe';
+import { CurrentLanguage } from 'src/common/decorator/current-language';
 
 @ApiTags('Products')
 @ApiBearerAuth("access-token")
@@ -46,6 +49,7 @@ export class ProductController {
   @UsePipes(ImageValidationPipe)
   @ApiOperation({ summary: 'Create a new product' })
   @ApiConsumes('multipart/form-data')
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiBody({
     schema: {
       type: 'object',
@@ -65,26 +69,32 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() currentUser: UserEntity,
+    @CurrentLanguage() lang: string
   ) {
-    return this.productService.create(createProductDto, file, currentUser);
+    return this.productService.create(createProductDto, file, currentUser, lang);
   }
 
   // Get all products
   @Get()
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'List of products' })
-  findAll() {
-    return this.productService.findAll();
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
+  findAll(@CurrentLanguage() lang: string) {
+    return this.productService.findAll(lang);
   }
 
   // Get product by ID
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by ID' })
   @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiResponse({ status: 200, description: 'Product found' })
   @ApiResponse({ status: 404, description: 'Product not found' })
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentLanguage() lang: string
+  ) {
+    return this.productService.findOne(id, lang);
   }
 
   // Update product
@@ -96,6 +106,7 @@ export class ProductController {
   @ApiOperation({ summary: 'Update an existing product' })
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiBody({
     schema: {
       type: 'object',
@@ -114,11 +125,13 @@ export class ProductController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   update(
     @CurrentUser() currentUser: UserEntity,
+    @CurrentLanguage() lang: string,
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFile() file?: Express.Multer.File,
+
   ) {
-    return this.productService.update(id, updateProductDto, file, currentUser);
+    return this.productService.update(id, updateProductDto, file, currentUser, lang);
   }
 
   // Delete product
@@ -127,12 +140,14 @@ export class ProductController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Delete a product' })
   @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })
+  @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiResponse({ status: 200, description: 'Product successfully deleted' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   remove(
     @Param('id') id: string,
-    @CurrentUser() currentUser: UserEntity
+    @CurrentUser() currentUser: UserEntity,
+    @CurrentLanguage() lang: string
   ) {
-    return this.productService.remove(id, currentUser);
+    return this.productService.remove(id, currentUser, lang);
   }
 }
