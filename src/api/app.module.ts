@@ -6,6 +6,12 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { MailModule } from 'src/infrastructure/mail/mail.module';
+import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
+import { OrderModule } from './order/order.module';
+import { JwtStrategy } from './auth/users/AuthStrategy';
+import { JwtAuthGuard } from './auth/users/AuthGuard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -18,8 +24,24 @@ import { MailModule } from 'src/infrastructure/mail/mail.module';
     }),
     AuthModule,
     UserModule,
+    ProductModule,
+    CategoryModule,
+    OrderModule,
     RedisModule,
     MailModule,
+  ],
+  providers: [
+    JwtStrategy,
+    JwtAuthGuard,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
   ]
 })
 export class AppModule { }
+ 

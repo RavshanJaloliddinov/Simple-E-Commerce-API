@@ -4,6 +4,7 @@ import { join } from 'path';
 import * as express from "express";
 import { AppModule } from './app.module';
 import { config } from 'src/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 @Injectable()
 export class Application {
@@ -22,6 +23,23 @@ export class Application {
     );
     app.setGlobalPrefix("api");
     app.use("/images", express.static(join(__dirname, "../../../uploads")));
+
+    const swagger = new DocumentBuilder()
+      .setTitle('API nomi')
+      .setDescription('API tavsifi')
+      .setVersion('1.0')
+      .addBearerAuth(  // Bearer Token sozlamalari
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        'access-token', // Token nomi
+      )
+      .build();
+
+    const document = SwaggerModule.createDocument(app, swagger);
+    SwaggerModule.setup('api', app, document);
 
 
     await app.listen(config.PORT, () => {

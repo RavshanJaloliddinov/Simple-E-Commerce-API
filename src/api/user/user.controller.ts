@@ -11,7 +11,7 @@ import {
   Post,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
-import { UserEntity } from "src/core/entity/user.entity";import { UserService } from "./user.service";
+import { UserEntity } from "src/core/entity/user.entity"; import { UserService } from "./user.service";
 import { Roles } from "src/common/database/Enums";
 import { RolesDecorator } from "../auth/roles/RolesDecorator";
 import { JwtAuthGuard } from "../auth/users/AuthGuard";
@@ -32,15 +32,18 @@ export class UserController {
 
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({ status: 200, description: "List of all users", type: [UserEntity] })
-  @RolesDecorator(Roles.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard)
+  // @RolesDecorator(Roles.SUPER_ADMIN)
+  // @UseGuards(RolesGuard)
+  @Public()
   @Get()
-  async getAllUsers(): Promise<UserEntity[]> {
+  async getAllUsers(@CurrentUser() user: UserEntity): Promise<UserEntity[]> {
     this.logger.log("Fetching all users");
+    console.log(user)
     return this.userService.getAllUsers();
   }
 
   @Get('deleted')
+  @UseGuards(JwtAuthGuard)
   @RolesDecorator(Roles.SUPER_ADMIN)
   async getAllDeletedUsers(): Promise<UserEntity[]> {
     this.logger.log("Fetching all users");
