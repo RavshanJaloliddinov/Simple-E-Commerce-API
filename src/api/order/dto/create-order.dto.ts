@@ -1,14 +1,19 @@
-// src/api/order/dto/create-order.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 'c51b5e08-0c85-4e22-8c53-1c3dd7ae7f94', description: 'Mahsulotning UUID' })
+  @ApiProperty({ example: '123 Main St', description: 'Order delivery address' })
   @IsNotEmpty()
-  @IsUUID()
-  productId: string;
+  @IsString()
+  address: string;
 
-  @ApiProperty({ example: 2, description: 'Buyurtma soni' })
+  @ApiProperty({ example: '40.7128', description: 'Latitude' })
   @IsNotEmpty()
-  quantity: number;
+  @IsString()
+  latitude: string;
+
+  @ApiProperty({ example: '-74.0060', description: 'Longitude' })
+  @IsNotEmpty()
+  @IsString()
+  longitude: string;
 }

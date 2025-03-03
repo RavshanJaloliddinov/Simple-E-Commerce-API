@@ -40,7 +40,7 @@ export class CategoryController {
   @ApiOperation({ summary: "Get all categories" })
   @ApiResponse({ status: 200, description: "List of all categories", type: [CategoryEntity] })
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
-  @UseGuards(JwtAuthGuard)
+
   @Get()
   async getAllCategories(@CurrentLanguage() lang: string) {
     this.logger.log("Fetching all categories");
@@ -53,7 +53,6 @@ export class CategoryController {
   @ApiResponse({ status: 404, description: "Category not found" })
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiParam({ name: "id", type: "string", description: "Category ID" })
-  @UseGuards(JwtAuthGuard)
   @Get(":id")
   async getCategoryById(
     @Param("id") id: string,

@@ -78,8 +78,7 @@ export class ProductService {
 
     if (!product) {
       throw new NotFoundException(responseByLang(ResponseTypes.NOT_FOUND, lang));
-    } 
-
+    }
     product.is_deleted = true;
     product.deleted_at = Date.now();
     product.deleted_by = user;

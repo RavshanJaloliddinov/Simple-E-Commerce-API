@@ -10,7 +10,6 @@ import {
   UseGuards,
   UseInterceptors,
   UsePipes,
-  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
@@ -43,7 +42,7 @@ export class ProductController {
 
   // Create product
   @Post()
-  @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER)
+  @RolesDecorator(Roles.ADMIN, Roles.USER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   @UsePipes(ImageValidationPipe)
@@ -60,6 +59,9 @@ export class ProductController {
         file: {
           type: 'string',
           format: 'binary',
+        },
+        categoryId: {
+          type: 'string',
         },
       },
     },
@@ -99,7 +101,7 @@ export class ProductController {
 
   // Update product
   @Patch(':id')
-  @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER)
+  @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   @UsePipes(ImageValidationPipe)
@@ -136,7 +138,7 @@ export class ProductController {
 
   // Delete product
   @Delete(':id')
-  @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN, Roles.USER)
+  @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Delete a product' })
   @ApiParam({ name: 'id', type: 'string', description: 'Product ID' })

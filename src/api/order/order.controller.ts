@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderStatusDto } from './dto/update-order.dto';
 import { Roles } from 'src/common/database/Enums';
 import { CurrentUser } from 'src/common/decorator/current-user';
 import { UserEntity } from 'src/core/entity/user.entity';
@@ -27,6 +26,7 @@ import { RolesGuard } from '../auth/roles/RoleGuard';
 import { JwtAuthGuard } from '../auth/users/AuthGuard';
 import { RolesDecorator } from '../auth/roles/RolesDecorator';
 import { CurrentLanguage } from 'src/common/decorator/current-language';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @ApiTags('Orders')
 @ApiBearerAuth('access-token')
@@ -37,7 +37,7 @@ export class OrderController {
   // Create a new order
   @Post('create')
   @RolesDecorator(Roles.USER, Roles.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @ApiOperation({ summary: 'Create a new order' })
   @ApiResponse({ status: 201, description: 'Order successfully created' })
   createOrder(
@@ -51,7 +51,7 @@ export class OrderController {
   // Get all orders (Admin only)
   @Get()
   @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiOperation({ summary: 'Get all orders (Admin only)' })
   @ApiResponse({ status: 200, description: 'List of all orders' })
@@ -62,7 +62,7 @@ export class OrderController {
   // Get orders by user
   @Get('user')
   @RolesDecorator(Roles.USER, Roles.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiOperation({ summary: 'Get orders by current user' })
   @ApiResponse({ status: 200, description: 'List of user orders' })
@@ -76,7 +76,7 @@ export class OrderController {
   // Get order by ID
   @Get(':id')
   @RolesDecorator(Roles.USER, Roles.ADMIN, Roles.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiOperation({ summary: 'Get order by ID' })
   @ApiParam({ name: 'id', type: 'string', description: 'Order ID' })
@@ -92,24 +92,24 @@ export class OrderController {
   // Update order status (Admin only)
   @Patch(':id/status')
   @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiOperation({ summary: 'Update order status' })
   @ApiParam({ name: 'id', type: 'string', description: 'Order ID' })
   @ApiResponse({ status: 200, description: 'Order status updated' })
   updateOrderStatus(
     @Param('id') id: string,
-    @Body() updateOrderStatusDto: UpdateOrderStatusDto,
+    @Body() updateOrderDto: UpdateOrderDto,
     @CurrentUser() currentUser: UserEntity,
     @CurrentLanguage() lang: string,
   ) {
-    return this.orderService.updateOrderStatus(id, updateOrderStatusDto, currentUser, lang);
+    return this.orderService.updateOrderStatus(id, updateOrderDto, currentUser, lang);
   }
 
   // Delete order (Admin only)
   @Delete(':id')
   @RolesDecorator(Roles.ADMIN, Roles.SUPER_ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
   @ApiOperation({ summary: 'Delete order by ID' })
   @ApiParam({ name: 'id', type: 'string', description: 'Order ID' })

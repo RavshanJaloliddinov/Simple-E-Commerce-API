@@ -23,6 +23,7 @@ export class BasketService {
       where: { id: productId, is_deleted: false },
     });
 
+
     if (!product) {
       throw new NotFoundException(responseByLang(ResponseTypes.PRODUCT_NOT_FOUND, lang));
     }

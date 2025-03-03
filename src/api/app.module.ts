@@ -12,6 +12,9 @@ import { OrderModule } from './order/order.module';
 import { JwtStrategy } from './auth/users/AuthStrategy';
 import { JwtAuthGuard } from './auth/users/AuthGuard';
 import { APP_GUARD } from '@nestjs/core';
+import { OrderItemModule } from './order-item/order-item.module';
+import { OrderItemEntity } from 'src/core/entity/order-item.entity';
+import { BasketModule } from './basket/basket.module';
 
 @Module({
   imports: [
@@ -19,7 +22,7 @@ import { APP_GUARD } from '@nestjs/core';
       type: 'postgres',
       url: config.DB_URL,
       synchronize: true,
-      entities: [UserEntity, CategoryEntity, ProductEntity, BasketEntity, OrderEntity],
+      entities: [UserEntity, CategoryEntity, ProductEntity, BasketEntity, OrderEntity, OrderItemEntity],
       ssl: false
     }),
     AuthModule,
@@ -28,7 +31,9 @@ import { APP_GUARD } from '@nestjs/core';
     CategoryModule,
     OrderModule,
     RedisModule,
+    BasketModule,
     MailModule,
+    OrderItemModule,
   ],
   providers: [
     JwtStrategy,
@@ -44,4 +49,3 @@ import { APP_GUARD } from '@nestjs/core';
   ]
 })
 export class AppModule { }
- 

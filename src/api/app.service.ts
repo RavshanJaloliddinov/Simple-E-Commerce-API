@@ -22,7 +22,8 @@ export class Application {
       }),
     );
     app.setGlobalPrefix("api");
-    app.use("/images", express.static(join(__dirname, "../../../uploads")));
+    app.use("/images", express.static(join(process.cwd(), "uploads")));
+
 
     const swagger = new DocumentBuilder()
       .setTitle('API nomi')

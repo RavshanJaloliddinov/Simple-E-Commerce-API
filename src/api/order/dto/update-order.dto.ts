@@ -1,10 +1,24 @@
-// src/api/order/dto/update-order-status.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { OrderStatus } from 'src/common/database/Enums';
 
-export class UpdateOrderStatusDto {
-  @ApiProperty({ example: 'confirmed', description: 'Buyurtma holati', enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'] })
-  @IsNotEmpty()
-  @IsIn(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'])
-  status: string;
+export class UpdateOrderDto {
+  @ApiProperty({ example: '123 Main St', description: 'Order delivery address', required: false })
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @ApiProperty({ example: '40.7128', description: 'Latitude', required: false })
+  @IsOptional()
+  @IsString()
+  latitude?: string;
+
+  @ApiProperty({ example: '-74.0060', description: 'Longitude', required: false })
+  @IsOptional()
+  @IsString()
+  longitude?: string;
+
+  @IsOptional()
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
 }
