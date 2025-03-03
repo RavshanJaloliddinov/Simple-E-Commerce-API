@@ -5,12 +5,13 @@ import * as express from "express";
 import { AppModule } from './app.module';
 import { config } from 'src/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AllExceptionFilter } from 'src/infrastructure/filter/all-exception.filter';
 
 @Injectable()
 export class Application {
   public static async main(): Promise<void> {
     let app = await NestFactory.create(AppModule);
-    // app.useGlobalFilters(new AllExceptionsFilter());
+    app.useGlobalFilters(new AllExceptionFilter());
     app.enableCors({
       origin: "*",
     });
