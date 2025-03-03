@@ -55,7 +55,7 @@ export class OrderService {
     // ✅ Basketdagi mahsulotlarni OrderItem sifatida yaratish
     const orderItems = basketItems.map(basketItem => {
       if (basketItem.product.stock < basketItem.quantity) {
-        throw new BadRequestException(`Not enough stock available for product: ${basketItem.product.name}`);
+        throw new BadRequestException('Bazada tovar yetarli emas')
       }
       total_sum += basketItem.product.price * basketItem.quantity
       return this.orderItemRepository.create({
@@ -80,6 +80,7 @@ export class OrderService {
       message: responseByLang(ResponseTypes.CREATE, lang)
     };
   }
+
 
 
   // **2️⃣ Get all orders (Admin only)**

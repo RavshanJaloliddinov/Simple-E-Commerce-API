@@ -6,7 +6,7 @@ import {
   Param,
   Body,
   Logger,
-  NotFoundException, 
+  NotFoundException,
   UseGuards,
   Post,
   Query
@@ -24,22 +24,23 @@ import { Public } from "src/common/decorator/public.decorator";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CurrentLanguage } from "src/common/decorator/current-language";
 
-@ApiTags("Users") 
-@ApiBearerAuth('access-token') 
+@ApiTags("Users")
+@ApiBearerAuth('access-token')
 @Controller("users")
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({ status: 200, description: "List of all users", type: [UserEntity] })
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
-  @Public()
+  @UseGuards(RolesGuard)
+  @RolesDecorator(Roles.SUPER_ADMIN)
   @Get()
   async getAllUsers(
     @CurrentUser() user: UserEntity,
-    @CurrentLanguage() lang: string,  
+    @CurrentLanguage() lang: string,
   ) {
     this.logger.log("Fetching all users");
     return this.userService.getAllUsers(lang);
@@ -48,7 +49,7 @@ export class UserController {
   @ApiOperation({ summary: "Get all deleted users" })
   @ApiResponse({ status: 200, description: "List of all deleted users", type: [UserEntity] })
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @RolesDecorator(Roles.SUPER_ADMIN)
   @Get('deleted')
   async getAllDeletedUsers(@Query('lang') lang: string) {
@@ -117,7 +118,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @RolesDecorator(Roles.SUPER_ADMIN)
   @Delete(":id")
-  async deleteUser( 
+  async deleteUser(
     @Param("id") id: string,
     @CurrentUser() currentUser: UserEntity,
     @CurrentLanguage() lang: string
