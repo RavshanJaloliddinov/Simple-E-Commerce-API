@@ -1,12 +1,6 @@
-
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { UserEntity } from 'src/core/entity/user.entity';
-import { ProductEntity } from 'src/core/entity/product.entity';
+import { OrderItemEntity } from './order-item.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 import { OrderStatus } from 'src/common/database/Enums';
 
@@ -18,12 +12,22 @@ export class OrderEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, (user) => user.orders, { onDelete: 'CASCADE' })
   user: UserEntity;
 
-  @ManyToOne(() => ProductEntity, (product) => product.orders, { onDelete: 'CASCADE' })
-  product: ProductEntity;
+  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order, { cascade: true })
+  orderItems: OrderItemEntity[];
 
-  @Column({ type: 'int' })
-  quantity: number;
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
+  status: OrderStatus;
 
-  @Column({ type: 'enum', enum: OrderStatus, default: 'pending' })
-  status: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
+  latitude: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
+  longitude: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  total_sum: number;
+
 }

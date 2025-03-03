@@ -20,7 +20,7 @@ export class FileService {
 
       await fs.writeFile(filePath, file.buffer);
 
-      return `/uploads/${fileName}`;
+      return `${fileName}`;
     } catch (error) {
       throw new BadRequestException(`Error saving file: ${error.message}`);
     }

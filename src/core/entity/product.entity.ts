@@ -3,7 +3,8 @@ import { BaseEntity } from 'src/common/database/BaseEntity';
 import { ProductStatus } from 'src/common/database/Enums';
 import { BasketEntity } from './basket.entity';
 import { UserEntity } from './user.entity';
-import { OrderEntity } from './order.entity';
+import { OrderItemEntity } from './order-item.entity';
+import { CategoryEntity } from './category.entity';
 
 @Entity('product')
 export class ProductEntity extends BaseEntity {
@@ -13,7 +14,7 @@ export class ProductEntity extends BaseEntity {
     @Column({ type: 'text', nullable: true })
     description: string;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'integer' })
     price: number;
 
     @Column({ type: 'int', default: 0 })
@@ -31,7 +32,9 @@ export class ProductEntity extends BaseEntity {
     @OneToMany(() => BasketEntity, (basketItem) => basketItem.product)
     basketItems: BasketEntity[];
 
-    @OneToMany(() => OrderEntity, (order) => order.product)
-    orders: OrderEntity[];
+    @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.product)
+    orderItems: OrderItemEntity[];
 
+    @ManyToOne(() => CategoryEntity, (category) => category.products, { onDelete: 'SET NULL', nullable: true })
+    category: CategoryEntity;
 }

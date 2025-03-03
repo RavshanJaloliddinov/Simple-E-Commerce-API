@@ -6,6 +6,15 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { MailModule } from 'src/infrastructure/mail/mail.module';
+import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
+import { OrderModule } from './order/order.module';
+import { JwtStrategy } from './auth/users/AuthStrategy';
+import { JwtAuthGuard } from './auth/users/AuthGuard';
+import { APP_GUARD } from '@nestjs/core';
+import { OrderItemModule } from './order-item/order-item.module';
+import { OrderItemEntity } from 'src/core/entity/order-item.entity';
+import { BasketModule } from './basket/basket.module';
 
 @Module({
   imports: [
@@ -13,13 +22,30 @@ import { MailModule } from 'src/infrastructure/mail/mail.module';
       type: 'postgres',
       url: config.DB_URL,
       synchronize: true,
-      entities: [UserEntity, CategoryEntity, ProductEntity, BasketEntity, OrderEntity],
+      entities: [UserEntity, CategoryEntity, ProductEntity, BasketEntity, OrderEntity, OrderItemEntity],
       ssl: false
     }),
     AuthModule,
     UserModule,
+    ProductModule,
+    CategoryModule,
+    OrderModule,
     RedisModule,
+    BasketModule,
     MailModule,
+    OrderItemModule,
+  ],
+  providers: [
+    JwtStrategy,
+    JwtAuthGuard,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
   ]
 })
 export class AppModule { }
