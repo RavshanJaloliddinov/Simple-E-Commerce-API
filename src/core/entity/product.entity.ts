@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { BaseEntity } from 'src/common/database/BaseEntity';
+import { BaseEntity } from '../../common/database/BaseEntity';
 import { ProductStatus } from 'src/common/database/Enums';
 import { BasketEntity } from './basket.entity';
 import { UserEntity } from './user.entity';

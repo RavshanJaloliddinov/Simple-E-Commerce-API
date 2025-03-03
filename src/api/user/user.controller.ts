@@ -81,9 +81,9 @@ export class UserController {
   @ApiResponse({ status: 201, description: "User created", type: UserEntity })
   @ApiResponse({ status: 409, description: "User with this email already exists" })
   @ApiQuery({ name: "lang", required: false, description: "Language (en, ru, uz)" })
-  @UseGuards(JwtAuthGuard)
   @Public()
-  @RolesDecorator(Roles.SUPER_ADMIN, Roles.USER, Roles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @RolesDecorator(Roles.SUPER_ADMIN, Roles.ADMIN)
   @Post()
   async createUser(
     @Body() createUserDto: CreateUserDto,

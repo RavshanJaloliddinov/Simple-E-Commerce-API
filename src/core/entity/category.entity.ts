@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { ProductEntity } from 'src/core/entity/product.entity';
+import { BaseEntity } from 'src/common/database/BaseEntity';
 
 @Entity('categories')
-export class CategoryEntity {
+export class CategoryEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

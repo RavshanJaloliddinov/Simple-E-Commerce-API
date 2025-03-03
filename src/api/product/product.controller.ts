@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Roles } from 'src/common/database/Enums';
+import { ProductStatus, Roles } from 'src/common/database/Enums';
 import {
   ApiTags,
   ApiOperation,
@@ -56,12 +56,12 @@ export class ProductController {
         name: { type: 'string' },
         description: { type: 'string' },
         price: { type: 'number' },
+        stock: { type: 'number' },
+        status: { type: 'string', enum: Object.values(ProductStatus) },
+        categoryId: { type: 'string' },
         file: {
           type: 'string',
           format: 'binary',
-        },
-        categoryId: {
-          type: 'string',
         },
       },
     },
@@ -116,6 +116,9 @@ export class ProductController {
         name: { type: 'string' },
         description: { type: 'string' },
         price: { type: 'number' },
+        stock: { type: 'number' },
+        status: { type: 'string', enum: Object.values(ProductStatus) },
+        categoryId: { type: 'string' },
         file: {
           type: 'string',
           format: 'binary',

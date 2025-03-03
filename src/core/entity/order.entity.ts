@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, OneToMany, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { UserEntity } from 'src/core/entity/user.entity';
 import { OrderItemEntity } from './order-item.entity';
-import { BaseEntity } from 'src/common/database/BaseEntity';
+import { BaseEntity } from '../../common/database/BaseEntity';
 import { OrderStatus } from 'src/common/database/Enums';
 
 @Entity('orders')
